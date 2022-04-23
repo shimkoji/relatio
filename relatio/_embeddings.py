@@ -248,6 +248,7 @@ class phraseBERTEmbeddings(EmbeddingsBase):
     """
 
     path = "whaleloops/phrase-bert"
+    model = Embeddings("phrase-BERT",path)
 
     """
     def __init__(self, path: str) -> None:
