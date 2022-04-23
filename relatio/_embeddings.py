@@ -68,6 +68,7 @@ class Embeddings(EmbeddingsBase):
             Type[GensimWord2VecEmbeddings],
             Type[GensimPreTrainedEmbeddings],
             Type[spaCyEmbeddings],
+            Type[phraseBERTEmbeddings]
         ]
         if embeddings_type == "TensorFlow_USE":
             EmbeddingsClass = TensorFlowUSEEmbeddings
@@ -77,6 +78,8 @@ class Embeddings(EmbeddingsBase):
             EmbeddingsClass = GensimPreTrainedEmbeddings
         elif embeddings_type == "spaCy":
             EmbeddingsClass = spaCyEmbeddings
+        elif embeddings_type == "phrase-BERT":
+            EmbeddingsClass = phraseBERTEmbeddings
         else:
             raise ValueError(f"Unknown embeddings_type={embeddings_type}")
 
@@ -239,3 +242,23 @@ class GensimPreTrainedEmbeddings(EmbeddingsBase):
             raise
 
         return api.load(model)
+
+
+class phraseBERTEmbeddings(EmbeddingsBase):
+    """
+
+    path = "whaleloops/phrase-bert"
+
+    """
+    def __init__(self, path: str) -> None:
+        try:
+            from sentence_transformers import SentenceTransformer
+
+        except ModuleNotFoundError:
+            print("Please install sentence_transformers package")
+            raise
+
+        self._model = SentenceTransformer(path)
+
+    def _get_default_vector(self, phrase: str) -> np.ndarray:
+        return self._model.encode(phrase)
